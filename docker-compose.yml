@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  redmine:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/redmine
+    environment:
+      RAILS_ENV: development  # 必要に応じて 'production' に変更
