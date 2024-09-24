@@ -3,6 +3,9 @@
 # #
 # % docker compose exec redmine rails export:entity_relationship_diagram_plantuml
 # 
+# reference: 
+#   https://qiita.com/taptappun/items/e0d146ccbd23887113bf
+# 
 # lib/tasks/export_er_diagram.rake
 
 namespace :export do
