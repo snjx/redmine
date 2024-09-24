@@ -8,4 +8,13 @@ services:
     volumes:
       - .:/usr/src/redmine
     environment:
-      RAILS_ENV: development  # 必要に応じて 'production' に変更
+      RAILS_ENV: development
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: your_mysql_root_password
+    volumes:
+      - ./mysql_data:/var/lib/mysql
