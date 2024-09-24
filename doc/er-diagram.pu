@@ -1,0 +1,824 @@
+```
+% docker compose exec redmine rails export:entity_relationship_diagram_plantuml
+Warning: Missing model class for relation:
+  Model: HABTM_Queries
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_ManagedRoles
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_CustomFields
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Projects
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_IssueCustomFields
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Trackers
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Changesets
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Users
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Children
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Parents
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Issues
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Groups
+  Relation: left_side
+  Class Name: LeftSide
+Warning: Missing model class for relation:
+  Model: HABTM_Roles
+  Relation: left_side
+  Class Name: LeftSide
+```
+```plantuml
+@startuml redmine_erd
+
+entity "queries_roles" {
+# query_id [FK(queries.id)] int
+role_id int
+}
+
+
+entity "roles_managed_roles" {
+role_id int
+# managed_role_id [FK(roles.id)] int
+}
+
+
+entity "custom_fields_trackers" {
+# custom_field_id [FK(custom_fields.id)] int
+# tracker_id [FK(trackers.id)] int
+}
+
+
+entity "custom_fields_projects" {
+# custom_field_id [FK(custom_fields.id)] int
+# project_id [FK(projects.id)] int
+}
+
+
+entity "changesets_issues" {
+# changeset_id [FK(changesets.id)] int
+# issue_id [FK(issues.id)] int
+}
+
+
+entity "groups_users" {
+# group_id [FK(users.id)] int
+# user_id [FK(users.id)] int
+}
+
+
+entity "changeset_parents" {
+# changeset_id [FK(changesets.id)] int
+# parent_id [FK(changesets.id)] int
+}
+
+
+entity "custom_fields_roles" {
+custom_field_id int
+# role_id [FK(roles.id)] int
+}
+
+
+entity "workflows" {
++ id [PK] int
+==
+# tracker_id [FK(trackers.id)] int
+# old_status_id [FK(issue_statuses.id)] int
+# new_status_id [FK(issue_statuses.id)] int
+# role_id [FK(roles.id)] int
+assignee tinyint(1)
+author tinyint(1)
+type varchar(30)
+field_name varchar(30)
+rule varchar(30)
+}
+
+
+entity "wiki_redirects" {
++ id [PK] int
+==
+# wiki_id [FK(wikis.id)] int
+title varchar(255)
+redirects_to varchar(255)
+created_on datetime
+redirects_to_wiki_id int
+}
+
+
+entity "wiki_pages" {
++ id [PK] int
+==
+# wiki_id [FK(wikis.id)] int
+title varchar(255)
+created_on datetime
+protected tinyint(1)
+# parent_id [FK(wiki_pages.id)] int
+}
+
+
+entity "wiki_content_versions" {
++ id [PK] int
+==
+# wiki_content_id [FK(wiki_contents.id)] int
+# page_id [FK(wiki_pages.id)] int
+# author_id [FK(users.id)] int
+data longblob
+compression varchar(6)
+comments varchar(1024)
+updated_on datetime
+version int
+}
+
+
+entity "wiki_contents" {
++ id [PK] int
+==
+# page_id [FK(wiki_pages.id)] int
+# author_id [FK(users.id)] int
+text longtext
+comments varchar(1024)
+updated_on datetime
+version int
+}
+
+
+entity "wikis" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+start_page varchar(255)
+status int
+}
+
+
+entity "watchers" {
++ id [PK] int
+==
+watchable_type varchar(255)
+# watchable_id [FK(news.id)] int
+# user_id [FK(users.id)] int
+}
+
+
+entity "user_preferences" {
++ id [PK] int
+==
+# user_id [FK(users.id)] int
+others text
+hide_mail tinyint(1)
+time_zone varchar(255)
+}
+
+
+entity "tokens" {
++ id [PK] int
+==
+# user_id [FK(users.id)] int
+action varchar(30)
+* value varchar(40)
+created_on datetime
+updated_on timestamp
+}
+
+
+entity "time_entries" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+# author_id [FK(users.id)] int
+# user_id [FK(users.id)] int
+# issue_id [FK(issues.id)] int
+hours float
+comments varchar(1024)
+# activity_id [FK(enumerations.id)] int
+spent_on date
+tyear int
+tmonth int
+tweek int
+created_on datetime
+updated_on datetime
+}
+
+
+entity "roles" {
++ id [PK] int
+==
+name varchar(255)
+position int
+assignable tinyint(1)
+builtin int
+permissions text
+issues_visibility varchar(30)
+users_visibility varchar(30)
+time_entries_visibility varchar(30)
+all_roles_managed tinyint(1)
+settings text
+# default_time_entry_activity_id [FK(enumerations.id)] int
+}
+
+
+entity "messages" {
++ id [PK] int
+==
+# board_id [FK(boards.id)] int
+# parent_id [FK(messages.id)] int
+subject varchar(255)
+content text
+# author_id [FK(users.id)] int
+replies_count int
+# last_reply_id [FK(messages.id)] int
+created_on datetime
+updated_on datetime
+locked tinyint(1)
+sticky int
+}
+
+
+entity "member_roles" {
++ id [PK] int
+==
+# member_id [FK(members.id)] int
+# role_id [FK(roles.id)] int
+inherited_from int
+}
+
+
+entity "journal_details" {
++ id [PK] int
+==
+# journal_id [FK(journals.id)] int
+property varchar(30)
+prop_key varchar(30)
+old_value longtext
+value longtext
+}
+
+
+entity "journals" {
++ id [PK] int
+==
+# journalized_id [FK(issues.id)] int
+journalized_type varchar(30)
+# user_id [FK(users.id)] int
+notes longtext
+created_on datetime
+updated_on datetime
+# updated_by_id [FK(users.id)] int
+private_notes tinyint(1)
+}
+
+
+entity "issue_statuses" {
++ id [PK] int
+==
+name varchar(30)
+description varchar(255)
+is_closed tinyint(1)
+position int
+default_done_ratio int
+}
+
+
+entity "trackers" {
++ id [PK] int
+==
+name varchar(30)
+description varchar(255)
+position int
+is_in_roadmap tinyint(1)
+fields_bits int
+# default_status_id [FK(issue_statuses.id)] int
+}
+
+
+entity "projects" {
++ id [PK] int
+==
+name varchar(255)
+description text
+homepage varchar(255)
+is_public tinyint(1)
+# parent_id [FK(projects.id)] int
+created_on timestamp
+updated_on timestamp
+identifier varchar(255)
+status int
+lft int
+rgt int
+inherit_members tinyint(1)
+# default_version_id [FK(versions.id)] int
+# default_assigned_to_id [FK(users.id)] int
+# default_issue_query_id [FK(queries.id)] int
+}
+
+
+entity "issues" {
++ id [PK] int
+==
+# tracker_id [FK(trackers.id)] int
+# project_id [FK(projects.id)] int
+subject varchar(255)
+description longtext
+due_date date
+# category_id [FK(issue_categories.id)] int
+# status_id [FK(issue_statuses.id)] int
+# assigned_to_id [FK(users.id)] int
+# priority_id [FK(enumerations.id)] int
+# fixed_version_id [FK(versions.id)] int
+# author_id [FK(users.id)] int
+lock_version int
+created_on timestamp
+updated_on timestamp
+start_date date
+done_ratio int
+estimated_hours float
+# parent_id [FK(issues.id)] int
+root_id int
+lft int
+rgt int
+is_private tinyint(1)
+closed_on datetime
+}
+
+
+entity "import_items" {
++ id [PK] int
+==
+# import_id [FK(imports.id)] int
+position int
+obj_id int
+message text
+unique_id varchar(255)
+}
+
+
+entity "imports" {
++ id [PK] int
+==
+type varchar(255)
+# user_id [FK(users.id)] int
+filename varchar(255)
+settings text
+total_items int
+finished tinyint(1)
+created_at datetime
+updated_at datetime
+}
+
+
+entity "enabled_modules" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+name varchar(255)
+}
+
+
+entity "email_addresses" {
++ id [PK] int
+==
+# user_id [FK(users.id)] int
+address varchar(255)
+is_default tinyint(1)
+notify tinyint(1)
+created_on datetime
+updated_on datetime
+}
+
+
+entity "custom_values" {
++ id [PK] int
+==
+customized_type varchar(30)
+# customized_id [FK(enumerations.id)] int
+# custom_field_id [FK(custom_fields.id)] int
+value longtext
+}
+
+
+entity "custom_field_enumerations" {
++ id [PK] int
+==
+# custom_field_id [FK(custom_fields.id)] int
+name varchar(255)
+active tinyint(1)
+position int
+}
+
+
+entity "comments" {
++ id [PK] int
+==
+commented_type varchar(30)
+# commented_id [FK(news.id)] int
+# author_id [FK(users.id)] int
+content text
+created_on datetime
+updated_on datetime
+}
+
+
+entity "repositories" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+url varchar(255)
+login varchar(60)
+password varchar(255)
+root_url varchar(255)
+type varchar(255)
+path_encoding varchar(64)
+log_encoding varchar(64)
+extra_info longtext
+identifier varchar(255)
+is_default tinyint(1)
+created_on timestamp
+}
+
+
+entity "changesets" {
++ id [PK] int
+==
+# repository_id [FK(repositories.id)] int
+revision varchar(255)
+committer varchar(255)
+committed_on datetime
+comments longtext
+commit_date date
+scmid varchar(255)
+# user_id [FK(users.id)] int
+}
+
+
+entity "changes" {
++ id [PK] int
+==
+# changeset_id [FK(repositories.id)] int
+action varchar(1)
+path text
+from_path text
+from_revision varchar(255)
+revision varchar(255)
+branch varchar(255)
+}
+
+
+entity "boards" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+name varchar(255)
+description varchar(255)
+position int
+topics_count int
+messages_count int
+# last_message_id [FK(messages.id)] int
+# parent_id [FK(boards.id)] int
+}
+
+
+entity "auth_sources" {
++ id [PK] int
+==
+type varchar(30)
+name varchar(60)
+host varchar(60)
+port int
+account varchar(255)
+account_password varchar(255)
+base_dn varchar(255)
+attr_login varchar(30)
+attr_firstname varchar(30)
+attr_lastname varchar(30)
+attr_mail varchar(30)
+onthefly_register tinyint(1)
+tls tinyint(1)
+filter text
+timeout int
+verify_peer tinyint(1)
+}
+
+
+entity "attachments" {
++ id [PK] int
+==
+# container_id [FK(news.id)] int
+container_type varchar(30)
+filename varchar(255)
+disk_filename varchar(255)
+filesize bigint
+content_type varchar(255)
+digest varchar(64)
+downloads int
+# author_id [FK(users.id)] int
+created_on timestamp
+description varchar(255)
+disk_directory varchar(255)
+}
+
+
+entity "settings" {
++ id [PK] int
+==
+name varchar(255)
+value text
+updated_on timestamp
+}
+
+
+entity "users" {
++ id [PK] int
+==
+login varchar(255)
+hashed_password varchar(40)
+firstname varchar(30)
+lastname varchar(255)
+admin tinyint(1)
+status int
+last_login_on datetime
+language varchar(5)
+# auth_source_id [FK(auth_sources.id)] int
+created_on timestamp
+updated_on timestamp
+type varchar(255)
+mail_notification varchar(255)
+salt varchar(64)
+must_change_passwd tinyint(1)
+passwd_changed_on datetime
+twofa_scheme varchar(255)
+twofa_totp_key varchar(255)
+twofa_totp_last_used_at int
+twofa_required tinyint(1)
+}
+
+
+entity "versions" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+name varchar(255)
+description varchar(255)
+effective_date date
+created_on timestamp
+updated_on timestamp
+wiki_page_title varchar(255)
+status varchar(255)
+sharing varchar(255)
+}
+
+
+entity "members" {
++ id [PK] int
+==
+# user_id [FK(users.id)] int
+# project_id [FK(projects.id)] int
+created_on timestamp
+mail_notification tinyint(1)
+}
+
+
+entity "issue_categories" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+name varchar(60)
+# assigned_to_id [FK(users.id)] int
+}
+
+
+entity "documents" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+# category_id [FK(enumerations.id)] int
+title varchar(255)
+description text
+created_on timestamp
+}
+
+
+entity "news" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+title varchar(60)
+summary varchar(255)
+description text
+# author_id [FK(users.id)] int
+created_on timestamp
+comments_count int
+}
+
+
+entity "queries" {
++ id [PK] int
+==
+# project_id [FK(projects.id)] int
+name varchar(255)
+filters text
+# user_id [FK(users.id)] int
+column_names text
+sort_criteria text
+group_by varchar(255)
+type varchar(255)
+visibility int
+options text
+description varchar(255)
+}
+
+
+entity "enumerations" {
++ id [PK] int
+==
+name varchar(30)
+position int
+is_default tinyint(1)
+type varchar(255)
+active tinyint(1)
+# project_id [FK(projects.id)] int
+# parent_id [FK(enumerations.id)] int
+position_name varchar(30)
+}
+
+
+entity "issue_relations" {
++ id [PK] int
+==
+# issue_from_id [FK(issues.id)] int
+# issue_to_id [FK(issues.id)] int
+relation_type varchar(255)
+delay int
+}
+
+
+entity "custom_fields" {
++ id [PK] int
+==
+type varchar(30)
+name varchar(30)
+field_format varchar(30)
+possible_values text
+regexp varchar(255)
+min_length int
+max_length int
+is_required tinyint(1)
+is_for_all tinyint(1)
+is_filter tinyint(1)
+position int
+searchable tinyint(1)
+default_value text
+editable tinyint(1)
+visible tinyint(1)
+multiple tinyint(1)
+format_store text
+description text
+}
+
+
+queries --o{ queries_roles
+roles --o{ roles_managed_roles
+custom_fields --o{ custom_fields_trackers
+projects --o{ custom_fields_projects
+custom_fields --o{ custom_fields_projects
+trackers --o{ custom_fields_trackers
+changesets --o{ changesets_issues
+users --o{ groups_users
+changesets --o{ changeset_parents
+issues --o{ changesets_issues
+roles --o{ custom_fields_roles
+roles --o{ workflows
+trackers --o{ workflows
+issue_statuses --o{ workflows
+wikis --o{ wiki_redirects
+wikis --o{ wiki_pages
+wiki_pages |o--o| wiki_contents
+wiki_pages --o{ attachments
+wiki_pages --o{ wiki_pages
+wiki_pages --o{ watchers
+wiki_pages }o--o{ users
+wiki_pages --o{ wiki_content_versions
+users --o{ wiki_content_versions
+users --o{ wiki_contents
+wiki_contents --o{ wiki_content_versions
+wikis --o{ watchers
+wikis }o--o{ users
+users --o{ watchers
+projects --o{ time_entries
+issues --o{ time_entries
+users --o{ time_entries
+enumerations --o{ time_entries
+time_entries --o{ custom_values
+enumerations --o{ roles
+roles --o{ member_roles
+roles }o--o{ members
+boards --o{ messages
+users --o{ messages
+messages --o{ messages
+messages --o{ attachments
+messages --o{ watchers
+messages }o--o{ users
+members --o{ member_roles
+journals --o{ journal_details
+issues --o{ journals
+users --o{ journals
+issue_statuses --o{ trackers
+trackers --o{ issues
+projects --o{ projects
+projects --o{ members
+projects }o--o{ users
+projects --o{ enabled_modules
+projects --o{ issues
+projects }o--o{ journals
+projects --o{ versions
+versions --o{ projects
+users --o{ projects
+projects --o{ enumerations
+projects --o{ queries
+projects --o{ documents
+projects --o{ news
+projects --o{ issue_categories
+projects --o{ boards
+projects |o--o| repositories
+projects --o{ repositories
+projects }o--o{ changesets
+projects |o--o| wikis
+queries --o{ projects
+projects --o{ attachments
+projects --o{ custom_values
+issues --o{ issues
+issue_statuses --o{ issues
+users --o{ issues
+versions --o{ issues
+enumerations --o{ issues
+issue_categories --o{ issues
+issues --o{ issue_relations
+issues --o{ attachments
+issues --o{ custom_values
+issues --o{ watchers
+issues }o--o{ users
+imports --o{ import_items
+users --o{ imports
+enabled_modules --o{ watchers
+enabled_modules }o--o{ users
+custom_fields --o{ custom_values
+custom_fields --o{ custom_field_enumerations
+users --o{ comments
+repositories --o{ changesets
+repositories }o--o{ changes
+users --o{ changesets
+changesets --o{ changes
+messages --o{ boards
+boards --o{ boards
+boards --o{ watchers
+boards }o--o{ users
+auth_sources --o{ users
+users --o{ attachments
+users --o{ members
+users }o--o{ projects
+users --o{ issue_categories
+versions --o{ custom_values
+versions --o{ attachments
+members }o--o{ roles
+enumerations --o{ documents
+documents --o{ attachments
+documents --o{ custom_values
+users --o{ news
+news --o{ comments
+news --o{ attachments
+news --o{ watchers
+news }o--o{ users
+users --o{ queries
+enumerations --o{ custom_values
+enumerations --o{ enumerations
+users --o{ custom_values
+users |o--o| user_preferences
+users |o--o| tokens
+users |o--o| email_addresses
+users --o{ email_addresses
+@enduml
+```
